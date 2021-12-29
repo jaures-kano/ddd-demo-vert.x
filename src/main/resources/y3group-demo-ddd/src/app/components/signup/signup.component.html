@@ -1,0 +1,61 @@
+<div class="container mt-5 max-width-500">
+	<h3 class="text-center">
+		Sign Up
+	</h3>
+	<div class="form-signup shadow rounded bg-white">
+		<form [formGroup]="form" (ngSubmit)="onSubmit()">
+			<div class="form-group">
+				<label for="account">Username</label>
+				<input formControlName="username" type="text" class="form-control" id="account"
+					   [class.is-invalid]="!form.pristine && form.get('username')?.invalid"
+					   placeholder="Enter your username."
+					   aria-describedby="accountHelp">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('username')?.hasError('required') ? 'required' :
+					 (form.get('username')?.hasError('minlength') ? 'minlength' : 'default')
+				">
+					<span *ngSwitchCase="'required'">Username is required.</span>
+					<span *ngSwitchCase="'minlength'">Username is too short.</span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input formControlName="password" type="password" class="form-control" id="password"
+					   [class.is-invalid]="!form.pristine && form.get('password')?.invalid"
+					   placeholder="Enter your password.">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('password')?.hasError('required') ? 'required' :
+					 (form.get('password')?.hasError('minlength') ? 'minlength' : 'default')
+				">
+					<span *ngSwitchCase="'required'">Password is required.</span>
+					<span *ngSwitchCase="'minlength'">Password is too short.</span>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="confirmPassword">Confirm password</label>
+				<input formControlName="confirmPassword" type="password" class="form-control" id="confirmPassword"
+					   [class.is-invalid]="!form.pristine && form.get('confirmPassword')?.invalid"
+					   placeholder="Confirm password.">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('confirmPassword')?.hasError('password_not_match') ? 'password_not_match' :
+					 (form.get('confirmPassword')?.hasError('required') ? 'required' :
+					 (form.get('confirmPassword')?.hasError('minlength') ? 'minlength' : 'default'))
+				">
+					<span *ngSwitchCase="'required'">Confirm password is required.</span>
+					<span *ngSwitchCase="'minlength'">Password is too short.</span>
+					<span *ngSwitchCase="'password_not_match'">Password and confirm password does not match.</span>
+				</div>
+			</div>
+			<div class="text-center">
+				<button type="submit" class="btn btn-primary">Sign Up</button>
+			</div>
+			<div class="text-right">
+				<a [routerLink]="'/' + pageSignIn" class="btn-signup">Login</a>
+			</div>
+		</form>
+	</div>
+</div>

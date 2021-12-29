@@ -1,0 +1,7 @@
+<div class="splashScreen d-none" [class.d-block]="userService.user === null && cookieService.get('session') !== ''">
+	<div class="d-flex justify-content-center align-items-center w-100" style="height:85%">
+		<div class="spinner-border text-light" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+</div>
