@@ -1,12 +1,14 @@
 package com.cmc.y3group.ddd.config;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import com.cmc.y3group.ddd.infrastructure.system.vertx.eventbus.GenericCodec;
+import com.cmc.y3group.ddd.infrastructure.system.vertx.eventbus.LocalEventBusCodec;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.micrometer.MicrometerMetricsOptions;
 import io.vertx.micrometer.VertxPrometheusOptions;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class VertxConfiguration {
@@ -24,6 +26,8 @@ public class VertxConfiguration {
 		VertxOptions vertxOptions = new VertxOptions().setMetricsOptions(metricsOptions);
 
 		this.vertx = Vertx.vertx(vertxOptions);
+//		vertx.eventBus().registerDefaultCodec(ArrayList.class, new GenericCodec<>(ArrayList.class));
+		vertx.eventBus().registerDefaultCodec(ArrayList.class, new LocalEventBusCodec<>());
 	}
 
 	public static VertxConfiguration getInstance() {

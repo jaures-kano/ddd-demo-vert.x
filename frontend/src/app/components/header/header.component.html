@@ -1,0 +1,102 @@
+<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+	<div class="container-lg">
+		<a class="navbar-brand" [routerLink]="'/'">
+			DDD Demo by Y3Group
+		</a>
+		<div ngbDropdown class="btn-group">
+			<button ngbDropdownToggle
+					id="btnUserMini"
+					class="navbar-toggler dropdown-toggle-split caret-off"
+					data-bs-toggle="dropdown"
+					aria-expanded="false"
+			>
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<ul ngbDropdownMenu *ngIf="!!userService.user"
+				class="dropdown-menu dropdown-menu-end" aria-labelledby="btnUserMini"
+				data-popper-placement="bottom-end">
+				<li>
+					<a class="dropdown-item text-uppercase" [routerLink]="'/'"
+					   [innerText]="userService.user?.name"></a>
+				</li>
+				<li>
+					<hr class="dropdown-divider">
+				</li>
+				<li>
+					<a class="dropdown-item" (click)="userService.logout()">Sign out</a>
+				</li>
+			</ul>
+			<ul ngbDropdownMenu *ngIf="!!userService.user === false" class="dropdown-menu dropdown-menu-end"
+				aria-labelledby="btnUserMini"
+				data-popper-placement="bottom-end">
+				<li>
+					<a class="dropdown-item" [routerLink]="'/' + environmentPage.SIGNIN">Sign In</a>
+				</li>
+				<li>
+					<a class="dropdown-item" [routerLink]="'/' + environmentPage.SIGNUP">Sign Up</a>
+				</li>
+			</ul>
+
+		</div>
+
+		<div class="collapse navbar-collapse" id="navbarToggler">
+			<!-- Left Side Of Navbar -->
+			<ul class="navbar-nav me-auto">
+
+			</ul>
+
+			<!-- Right Side Of Navbar -->
+			<ul *ngIf="!!userService.user" class="navbar-nav ml-auto">
+				<li class="d-flex align-items-center">
+					<a [routerLink]="'/' + environmentPage.CART" class="btn btn-sm
+						position-relative me-4 d-flex align-items-center">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+							 class="bi bi-cart2" viewBox="0 0 16 16">
+							<path
+								d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+						</svg>
+						<span *ngIf="!!cartService.number"
+							  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+							{{ cartService.number }}
+					  	</span>
+					</a>
+				</li>
+				<li class="d-flex align-items-center">
+					<a [routerLink]="'/' + environmentPage.HISTORY" class="btn d-flex">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
+							<path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+							<path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+							<path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+						</svg>
+					</a>
+				</li>
+				<li>
+					<div ngbDropdown class="nav-item dropdown btn-group">
+						<div ngbDropdownToggle id="btnUserNav" data-bs-toggle="dropdown"
+							 aria-label="Toggle navigation"
+							 class="nav-link dropdown-toggle text-uppercase"
+							 aria-expanded="false"
+							 [innerText]="userService.user?.name"
+						>
+						</div>
+						<div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="btnUserNav">
+							<a class="dropdown-item" (click)="userService.logout()">
+								Logout
+							</a>
+						</div>
+					</div>
+				</li>
+			</ul>
+
+			<ul *ngIf="!!userService.user === false" class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" [routerLink]="'/' + environmentPage.SIGNIN">Sign In</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" [routerLink]="'/' + environmentPage.SIGNUP">Sign Up</a>
+				</li>
+			</ul>
+
+		</div>
+	</div>
+</nav>

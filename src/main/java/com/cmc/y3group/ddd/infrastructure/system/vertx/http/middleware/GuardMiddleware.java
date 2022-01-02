@@ -1,13 +1,15 @@
 package com.cmc.y3group.ddd.infrastructure.system.vertx.http.middleware;
 
-import com.cmc.y3group.ddd.domain.subdomain.session.repositories.SessionRepository;
+import com.cmc.y3group.ddd.domain.subdomain.user.repositories.SessionRepository;
 import com.cmc.y3group.ddd.domain.subdomain.user.model.User;
 import com.cmc.y3group.ddd.domain.subdomain.user.repositories.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.vertx.core.Handler;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import com.cmc.y3group.ddd.domain.subdomain.session.model.Session;
+import com.cmc.y3group.ddd.domain.subdomain.user.model.UserSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +17,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.cmc.y3group.ddd.config.constants.AuthConstant.*;
+import static com.cmc.y3group.ddd.infrastructure.support.MappingUtils.OBJ_MAPPER;
 
+@Slf4j
 @Component
 public class GuardMiddleware implements Handler<RoutingContext> {
 	@Autowired
@@ -25,9 +29,9 @@ public class GuardMiddleware implements Handler<RoutingContext> {
 	private SessionRepository sessionRepository;
 
 	@Override
-	public void handle(RoutingContext event) {
-		io.vertx.ext.web.Session ses = event.session();
-		Long id = ses.get(ID);
+	public void handle(RoutingContext ctx) {
+		io.vertx.ext.web.Session ses = ctx.session();
+		String id = ses.get(ID);
 
 		User user = null;
 		io.vertx.ext.auth.User userVertx = null;
@@ -38,28 +42,34 @@ public class GuardMiddleware implements Handler<RoutingContext> {
 		}
 
 		if (Objects.isNull(user)) {
-			Cookie cookieOfSes = event.request().getCookie(SESSION);
+			Cookie cookieOfSes = ctx.request().getCookie(SESSION);
 			if (!Objects.isNull(cookieOfSes)) {
 				String sesWeb = cookieOfSes.getValue();
 				String[] splitCookie = sesWeb.split("\\|");
 				if (splitCookie.length == 2) {
-					Long idUser = Long.valueOf(splitCookie[0]);
-					String sesUser = splitCookie[1];
+					String userId = splitCookie[0];
+					String userSes = splitCookie[1];
 
-					Session sesModel = sessionRepository.findBySession(sesUser);
-					if (Objects.isNull(sesModel)) {
-						// TODO: incrementally the number of failed logins...
-					} else user = sesModel.getUser();
+					Optional<UserSession> optionalUserSes = sessionRepository.findById(userSes);
+					if (optionalUserSes.isPresent()) {
+						Optional<User> optionalUser = userRepository.findById(optionalUserSes.get().getUserId());
+						if (optionalUser.isPresent() && optionalUser.get().getId().equals(userId))
+							user = optionalUser.get();
+					}
 				}
 			}
 		}
 		if (!Objects.isNull(user)) {
-			JsonObject principal = new JsonObject()
-				.put(ID, user.getId())
-				.put(USERNAME, user.getUsername());
-			userVertx = io.vertx.ext.auth.User.create(principal);
-			event.setUser(userVertx);
+			try {
+				String json = OBJ_MAPPER.writeValueAsString(user);
+				JsonObject principal = new JsonObject(json);
+//					.put(ID, user.getId());
+				userVertx = io.vertx.ext.auth.User.create(principal);
+				ctx.setUser(userVertx);
+			} catch (JsonProcessingException e) {
+				log.error(e.getMessage(), e);
+			}
 		}
-		event.next();
+		ctx.next();
 	}
 }

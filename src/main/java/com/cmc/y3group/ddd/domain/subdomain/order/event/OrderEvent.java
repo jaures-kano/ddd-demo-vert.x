@@ -6,19 +6,8 @@ import lombok.Data;
 @Data
 public class OrderEvent {
 	public enum TYPE {
-		/**
-		 * Create.
-		 */
 		CREATE,
-
-		/**
-		 * Update.
-		 */
 		UPDATE,
-
-		/**
-		 * Delete.
-		 */
 		DELETE
 	}
 

@@ -1,11 +1,13 @@
 package com.cmc.y3group.ddd.app.service;
 
-import com.cmc.y3group.ddd.domain.subdomain.cart.model.Cart;
+import com.cmc.y3group.ddd.app.models.response.cart.CartResponse;
+import com.cmc.y3group.ddd.domain.subdomain.user.model.User;
 import io.vertx.core.Future;
 
 public interface AppCartService {
-	Future<Cart> getCart(Long userId);
+	Future<CartResponse> getCart(User user);
 
-	Future<Long> add(Long userId, Long productId);
-	Future<Long> remove(Long userId, Long productId);
+	Future<CartResponse> addProductToCart(User user, String productId);
+
+	Future<CartResponse> remove(User user, String productId);
 }

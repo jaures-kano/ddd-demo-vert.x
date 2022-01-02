@@ -11,20 +11,14 @@ public class Response {
 	private String message;
 	private Object data;
 
-
 	public static final class CODE {
 		public static Integer OK = 0;
+		public static Integer ERROR = 99;
 
 	}
 
 	public static final class STATUS {
-		/**
-		 * Success.
-		 */
 		public static Integer SUCCESS = 0;
-		/**
-		 * Failure.
-		 */
 		public static Integer FAILURE = 1;
 	}
 }

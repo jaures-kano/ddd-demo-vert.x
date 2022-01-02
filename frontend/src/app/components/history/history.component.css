@@ -1,0 +1,22 @@
+.thumb-container {
+	width: 120px;
+	height: 50px;
+	position: relative;
+}
+
+.thumb-box {
+	width: 80px;
+	height: 50px;
+	border-radius: 10px;
+	box-shadow: 0 0.1rem 0.5rem rgb(0 0 0 / 18%) !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-position: center;
+	background-size: cover;
+}
+
+.thumb-box .thumb-box {
+	top: 5px;
+	left: 12px;
+}

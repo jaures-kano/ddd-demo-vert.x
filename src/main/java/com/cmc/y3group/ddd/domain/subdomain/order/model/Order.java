@@ -1,85 +1,77 @@
 package com.cmc.y3group.ddd.domain.subdomain.order.model;
 
-import com.cmc.y3group.ddd.domain.event.DomainEvents;
-import com.cmc.y3group.ddd.domain.subdomain.order.event.OrderEvent;
-import com.cmc.y3group.ddd.domain.subdomain.order.event.OrderEventBuilder;
-import com.cmc.y3group.ddd.domain.subdomain.order.service.OrderService;
-import com.cmc.y3group.ddd.domain.subdomain.user.model.User;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.CascadeType.ALL;
 
 @Data
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {@Index(name = "user_id", columnList = "userId")})
 public class Order {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 
-	private String phone;
+	@OneToOne(cascade = ALL, mappedBy = "order", fetch = FetchType.EAGER)
+	private OrderAddress address;
 
-	@OneToOne(cascade = ALL, mappedBy = "order")
-	private OrderAddress orderAddress;
-
-	@OneToMany(cascade = ALL, mappedBy = "order")
+	@OneToMany(cascade = ALL, mappedBy = "order", fetch = FetchType.EAGER)
 	private List<OrderItem> items;
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	private User user;
+	@OneToOne(cascade = ALL, mappedBy = "order", fetch = FetchType.EAGER)
+	private OrderBuyer buyer;
+
+	@Column(nullable = false)
+	private String userId;
+
+	private String voucher;
 
 	@Column(nullable = false)
 	@CreationTimestamp
-	private LocalDateTime createdAt;
+	private Timestamp createdAt;
 
 	@Column(nullable = false)
 	@UpdateTimestamp
-	private LocalDateTime updatedAt;
+	private Timestamp updatedAt;
 
+//	public void create() {
+//		orderService.save(this);
+//		OrderEvent evt = OrderEventBuilder.builder()
+//			.setOrder(this)
+//			.setType(OrderEvent.TYPE.CREATE)
+//			.build();
+////		DomainEvents.Order.raise(evt);
+//	}
 
-	//
-	private transient OrderService orderService;
+//	public void update() {
+//		orderService.save(this);
+//		OrderEvent evt = OrderEventBuilder.builder()
+//			.setOrder(this)
+//			.setType(OrderEvent.TYPE.UPDATE)
+//			.build();
+////		DomainEvents.Order.raise(evt);
+//	}
 
-	public void create() {
-		orderService.save(this);
-		OrderEvent evt = OrderEventBuilder.builder()
-			.setOrder(this)
-			.setType(OrderEvent.TYPE.CREATE)
-			.build();
-		DomainEvents.Order.Raise(evt);
+	public Integer totalQuantity() {
+		return Objects.isNull(items) ? 0 : items.stream().mapToInt(OrderItem::getQuantity).sum();
 	}
 
-	public void update() {
-		orderService.save(this);
-		OrderEvent evt = OrderEventBuilder.builder()
-			.setOrder(this)
-			.setType(OrderEvent.TYPE.UPDATE)
-			.build();
-		DomainEvents.Order.Raise(evt);
+	public Integer totalItem() {
+		return Objects.isNull(items) ? 0 : items.size();
 	}
 
-	public Integer getQuantity() {
-		return this.getItems().size();
+	public Double totalPrice() {
+		return Objects.isNull(items) ?
+			0D :
+			items.stream().mapToDouble(item -> item.getQuantity() * item.getPrice()).sum();
 	}
-
-	public Double getPrice() {
-		Double price = 0D;
-		for (OrderItem orderItem : this.getItems())
-			price += orderItem.getPrice();
-
-		return price;
-	}
-
 
 //	public void update() {
 //		OrderEvent event = new OrderEvent(this, "update");

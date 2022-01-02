@@ -1,9 +1,13 @@
 package com.cmc.y3group.ddd.infrastructure.support;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -11,6 +15,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +31,12 @@ public final class MappingUtils {
 	static {
 		OBJ_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		OBJ_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+		OBJ_MAPPER.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+		// 解决jackson2无法反序列化LocalDateTime的问题
+		OBJ_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		OBJ_MAPPER.registerModule(new JavaTimeModule());
+//		OBJ_MAPPER.activateDefaultTyping(OBJ_MAPPER.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
 	}
 
 	/**

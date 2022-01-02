@@ -1,0 +1,65 @@
+<div class="container mt-5">
+	<h1>History</h1>
+</div>
+<div class="container-lg mt-5 bg-white shadow-sm rounded p-3">
+	<table class="table">
+		<thead>
+		<tr>
+			<th scope="col"></th>
+			<th scope="col">Buyer</th>
+			<th scope="col">Phone</th>
+			<th scope="col">Address</th>
+			<th scope="col">Quantity</th>
+			<th scope="col">Price</th>
+		</tr>
+		</thead>
+		<tbody style="font-size: 14px;line-height: 18px">
+		<tr *ngFor="let item of items" style="vertical-align: middle;">
+			<td>
+				<div class="d-flex align-items-center">
+					<div class="thumb-container"
+						 [ngStyle]="{'height': '' + (item.items.length > 2 ? '60' : (item.items.length === 2 ? '55' : '50')) + 'px'}">
+						<div class="thumb-box d-flex align-items-center"
+							 [ngStyle]="{'background-image': 'url(' + (item.items[0].image !== undefined ? str.mergerURL(item.items[0].image) : environment.URL + '/assets/images/default.jpeg') + ''}">
+							<div *ngIf="item.items[1] !== undefined" class="thumb-box d-flex align-items-center"
+								 [ngStyle]="{'background-image': 'url(' + (item.items[1].image !== undefined ? str.mergerURL(item.items[1].image) : environment.URL + '/assets/images/default.jpeg') + ''}">
+								<div *ngIf="item.items[2] !== undefined" class="thumb-box d-flex align-items-center"
+									 [ngStyle]="{'background-image': 'url(' + (item.items[2].image !== undefined ? str.mergerURL(item.items[2].image) : environment.URL + '/assets/images/default.jpeg') + ''}">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div style="font-size: 14px;line-height: 18px;z-index: 1;">
+						<div>
+							[{{item.items[0].quantity}}] {{ str.cutString(item.items[0].title, 0, 180) }}
+						</div>
+						<div *ngIf="item.items[1] !== undefined">
+							[{{item.items[1].quantity}}] {{ str.cutString(item.items[1].title, 0, 180) }}
+						</div>
+						<div *ngIf="item.items[2] !== undefined" style="font-size: 12px;line-height: 12px;">
+							...
+						</div>
+					</div>
+
+				</div>
+			</td>
+			<td>{{ item.buyer.fullName }}</td>
+			<td>{{ item.buyer.phone }}</td>
+			<td>{{ !!item.address.address ? str.cutString(item.address.address, 0, 40) : "" }}</td>
+			<td>{{ item.totalQuantity | number }}</td>
+			<td style="font-weight: bold; color: #f73212;">{{ item.totalPrice | number }}</td>
+		</tr>
+		</tbody>
+	</table>
+
+	<div class="d-flex justify-content-between p-2">
+		<ngb-pagination [collectionSize]="collectionSize" [(page)]="pageNumber" [pageSize]="pageSize"
+						(pageChange)="refresh()"></ngb-pagination>
+
+		<!--		<select class="custom-select" style="width: auto" [(ngModel)]="pageNumber" (ngModelChange)="refresh()">-->
+		<!--			<option [ngValue]="10">10 items per page</option>-->
+		<!--			<option [ngValue]="20">20 items per page</option>-->
+		<!--			<option [ngValue]="100">100 items per page</option>-->
+		<!--		</select>-->
+	</div>
+</div>

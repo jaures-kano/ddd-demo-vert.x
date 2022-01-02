@@ -2,16 +2,13 @@ package com.cmc.y3group.ddd.app.http.controller.api.user;
 
 import com.cmc.y3group.ddd.app.models.response.Response;
 import com.cmc.y3group.ddd.app.models.response.user.UserResponse;
-import com.cmc.y3group.ddd.app.models.dto.SignInDTO;
-import com.cmc.y3group.ddd.domain.subdomain.session.service.SessionService;
-import com.cmc.y3group.ddd.domain.subdomain.session.model.Session;
-import com.cmc.y3group.ddd.domain.subdomain.user.model.User;
-import com.cmc.y3group.ddd.domain.subdomain.user.model.UserBuilder;
-import com.cmc.y3group.ddd.domain.subdomain.user.service.UserService;
+import com.cmc.y3group.ddd.app.service.AppUserService;
+import com.cmc.y3group.ddd.domain.subdomain.user.dto.CredentialDTO;
 import com.cmc.y3group.ddd.infrastructure.support.MappingUtils;
 import com.cmc.y3group.ddd.infrastructure.system.vertx.http.Controller;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
+import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,51 +20,36 @@ public class SignInApi extends Controller {
 	public static String PATH = "/user/signin";
 
 	@Autowired
-	private UserService userService;
+	private AppUserService appUserService;
 
-	@Autowired
-	private SessionService sessionService;
-
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void handle(RoutingContext evt) {
-		SignInDTO signInDTO = MappingUtils.requestMapping(evt, SignInDTO.class);
+	public void handle(RoutingContext ctx) {
+		CredentialDTO credentialDTO = MappingUtils.requestMapping(ctx, CredentialDTO.class);
 
-		if (Objects.isNull(signInDTO)) {
+		if (Objects.isNull(credentialDTO)) {
 			Response res = new Response();
 			res.setMessage(HttpResponseStatus.BAD_REQUEST.reasonPhrase());
 			res.setCode(HttpResponseStatus.BAD_REQUEST.code());
 			res.setStatus(Response.STATUS.FAILURE);
-			evt.response().setStatusCode(HttpResponseStatus.BAD_REQUEST.code());
-			evt.json(res);
+			ctx.response().setStatusCode(HttpResponseStatus.BAD_REQUEST.code());
+			ctx.json(res);
 			return;
 		}
+		SocketAddress sockAddr = ctx.request().remoteAddress();
+		credentialDTO.setIp(sockAddr.host());
+		credentialDTO.setPort(sockAddr.port());
+		credentialDTO.setAgent(ctx.get("User-Agent"));
 
-		UserBuilder builder = UserBuilder.builder();
-		builder.setUsername(signInDTO.getUsername());
-		builder.setPassword(signInDTO.getPassword());
-		builder.setUserService(userService);
+		Future<UserResponse> result = appUserService.signin(credentialDTO);
 
-		User user = builder.build();
-		Future<User> result = user.signin();
-
-		result.onSuccess(signInSuccessUser -> this.handleSuccess(evt, signInSuccessUser));
-		result.onFailure(err -> this.handleFailure(evt, err));
+		result.onSuccess(signInSuccessUser -> this.handleSuccess(ctx, signInSuccessUser));
+		result.onFailure(err -> this.handleFailure(ctx, err));
 	}
 
-	private void handleSuccess(RoutingContext evt, User user) {
-		Session ses = new Session();
-		ses.setUser(user);
-		ses.setSessionService(sessionService);
-		ses.generateSessionKey();
-		ses.saveChange();
-		String cookieSes = user.getId() + "|" + ses.getSession();
-
-		UserResponse userRes = new UserResponse();
-		userRes.setId(user.getId());
-		userRes.setUsername(user.getUsername());
-		userRes.setSession(cookieSes);
-
+	private void handleSuccess(RoutingContext evt, UserResponse userRes) {
 		Response res = new Response();
 		res.setMessage("Login successfully.");
 		res.setCode(Response.CODE.OK);
@@ -77,7 +59,7 @@ public class SignInApi extends Controller {
 	}
 
 	/**
-	 * @param evt Event.
+	 * @param evt       Event.
 	 * @param throwable Throwable.
 	 */
 	private void handleFailure(RoutingContext evt, Throwable throwable) {

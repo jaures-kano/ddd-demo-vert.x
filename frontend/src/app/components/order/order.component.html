@@ -1,0 +1,95 @@
+<div class="container mt-5">
+	<h1>Order</h1>
+</div>
+<div class="container-lg mt-5">
+	<div class="row align-items-stretch">
+		<div class="col-8">
+			<div class="bg-white shadow-sm rounded p-3">
+				<h3>Products</h3>
+				<table class="table table-bordered m-0">
+					<thead class="table-dark">
+					<tr>
+						<th scope="col">Title</th>
+						<th scope="col">Quantity</th>
+						<th scope="col">Price</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr *ngFor="let item of items" style="vertical-align: middle">
+						<td>
+							<div class="d-flex align-items-center">
+								<div class="thumb-box d-flex align-items-center"
+									 [ngStyle]="{'background-image': 'url(' + (item.product.images !== undefined && item.product.images[0] !== undefined ? str.mergerURL(item.product.images[0]) : environment.URL + '/assets/images/default.jpeg') + ''}">
+								</div>
+								<span>
+									{{ str.cutString(item.product.title, 0, 180) }}
+								</span>
+							</div>
+						</td>
+						<td>{{ item.quantity | number }}</td>
+						<td>{{ item.price | number }}</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-4">
+			<div class="d-flex flex-column h-100  bg-white shadow-sm rounded p-3">
+				<h3>Details</h3>
+				<table class="table table-bordered">
+					<tbody>
+					<tr style="vertical-align: middle">
+						<td>
+							<div class="d-flex">
+								<div>
+									<strong>Quantity:</strong>
+								</div>
+								<div class="ms-auto" style="font-weight: bold; color: #f73212;">
+									{{ cart?.totalQuantity | number }}
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr style="vertical-align: middle">
+						<td>
+							<div class="d-flex">
+								<div>
+									<strong>Total:</strong>
+								</div>
+								<div class="ms-auto" style="font-weight: bold; color: #f73212;">
+									{{ cart?.totalPrice | number }}
+								</div>
+							</div>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container-lg mt-5">
+	<div class="bg-white shadow-sm rounded p-3">
+		<h3>Information</h3>
+		<form [formGroup]="form" (ngSubmit)="onSubmit()">
+			<div class="row mt-4">
+				<div class="col-6">
+					<label for="fullname" class="form-label">Full name</label>
+					<input formControlName="fullname" type="text" class="form-control" id="fullname">
+				</div>
+				<div class="col-6">
+					<label for="address" class="form-label">Address</label>
+					<input formControlName="address" type="text" class="form-control" id="address">
+				</div>
+			</div>
+			<div class="row mt-4">
+				<div class="col-6">
+					<label for="phone" class="form-label">Phone</label>
+					<input formControlName="phone" type="text" class="form-control" id="phone">
+				</div>
+			</div>
+			<button type="submit" class="btn btn-primary mt-4">Submit</button>
+		</form>
+	</div>
+</div>

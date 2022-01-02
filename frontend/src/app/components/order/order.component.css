@@ -1,0 +1,11 @@
+.thumb-box {
+	width: 80px;
+	height: 50px;
+	justify-content: center;
+	box-shadow: 0 0.1rem 0.5rem rgb(0 0 0 / 18%) !important;
+	border-radius: 10px;
+	background-position: center;
+	background-size: cover;
+	margin-right: 15px;
+
+}

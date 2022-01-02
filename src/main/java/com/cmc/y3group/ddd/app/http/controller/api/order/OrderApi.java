@@ -1,25 +1,19 @@
 package com.cmc.y3group.ddd.app.http.controller.api.order;
 
-import com.cmc.y3group.ddd.app.models.dto.OrderDTO;
+import com.cmc.y3group.ddd.app.http.middleware.Authenticate;
 import com.cmc.y3group.ddd.app.models.filter.AppFilter;
-import com.cmc.y3group.ddd.app.models.response.OrderResponse;
-import com.cmc.y3group.ddd.app.models.response.Pagination;
 import com.cmc.y3group.ddd.app.models.response.Response;
 import com.cmc.y3group.ddd.app.service.AppOrderService;
-import com.cmc.y3group.ddd.domain.subdomain.order.model.Order;
+import com.cmc.y3group.ddd.domain.subdomain.user.model.User;
 import com.cmc.y3group.ddd.infrastructure.support.MappingUtils;
 import com.cmc.y3group.ddd.infrastructure.system.vertx.http.Controller;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static com.cmc.y3group.ddd.config.constants.AuthConstant.ID;
+import static com.cmc.y3group.ddd.infrastructure.support.MappingUtils.OBJ_MAPPER;
 
 @Slf4j
 @Component
@@ -31,17 +25,19 @@ public class OrderApi extends Controller {
 	 */
 	public static final String PATH = "/order";
 
-//	public OrderCreateApi() {
-//		middlewares = new Class[]{
-//			Authenticate.class
-//		};
-//	}
+	public OrderApi() {
+		middlewares = new Class[]{
+			Authenticate.class
+		};
+	}
 
+	@SneakyThrows
 	@Override
 	public void handle(RoutingContext evt) {
 		AppFilter filter = MappingUtils.requestMapping(evt, AppFilter.class, true);
+		User user = OBJ_MAPPER.readValue(evt.user().principal().toString(), User.class);
 
-		appOrderService.findByFilter(filter)
+		appOrderService.findByFilter(user, filter)
 			.onSuccess(pagination -> {
 				Response res = new Response();
 				res.setMessage("successfully.");

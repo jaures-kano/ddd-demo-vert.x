@@ -8,11 +8,10 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table
+@Table(name = "order_address")
 public class OrderAddress {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 
 	private String address;
 

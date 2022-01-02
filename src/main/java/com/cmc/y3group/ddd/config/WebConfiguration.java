@@ -12,9 +12,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class WebConfiguration {
+	public static final String WEB_ROOT = "static";
+
 	@Autowired
 	private WebProperties webProperties;
 
@@ -33,14 +36,16 @@ public class WebConfiguration {
 
 	@Bean
 	private BodyHandler bodyHandler() {
-		return BodyHandler.create();
+		BodyHandler bodyHnd = BodyHandler.create();
+		bodyHnd.setDeleteUploadedFilesOnEnd(true);
+		return bodyHnd;
 	}
 
 	public void config(Router router) {
 		router.route().handler(corsHandler());
 		router.route("/metrics").handler(PrometheusScrapingHandler.create());
 
-		StaticHandler staticHnd = StaticHandler.create("static");
+		StaticHandler staticHnd = StaticHandler.create(WEB_ROOT);
 		staticHnd.setCachingEnabled(true);
 		router.route(webProperties.getStaticPath()).handler(staticHnd);
 	}
@@ -48,6 +53,12 @@ public class WebConfiguration {
 	private CorsHandler corsHandler() {
 		return CorsHandler.create("*")
 			.allowCredentials(true)
+			.exposedHeaders(Set.of(
+				"Authorization", "Content-Language", "Content-Length",
+				"Cache-Control", "Content-Type", "Expires", "Last-Modified",
+				"Pragma", "Content-Disposition", "Session"))
+			.allowedHeader("*")
+			.maxAgeSeconds(14600)
 			.allowedMethods(new HashSet<>(HttpMethod.values()));
 	}
 }

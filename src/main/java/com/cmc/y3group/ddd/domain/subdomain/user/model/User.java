@@ -1,18 +1,14 @@
 package com.cmc.y3group.ddd.domain.subdomain.user.model;
 
-import com.cmc.y3group.ddd.domain.subdomain.user.model.email.UserEmail;
-import com.cmc.y3group.ddd.domain.subdomain.user.model.phone.UserPhone;
-import com.cmc.y3group.ddd.domain.subdomain.user.service.UserService;
-import io.vertx.core.Future;
 import io.vertx.ext.auth.HashingStrategy;
 import io.vertx.ext.auth.VertxContextPRNG;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 import static javax.persistence.CascadeType.ALL;
@@ -21,67 +17,60 @@ import static javax.persistence.CascadeType.ALL;
 @Entity
 @Table(name = "users")
 public class User {
+	private static final Long EPOCH = 641300000000L;
+	private static final Long RAND = 9999L;
+	private static final Long RAND_E = 1000L;
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 
-	@Column(unique = true)
-	private String username;
+	@Column(nullable = false)
+	private String name;
 
+	@Column(nullable = false)
 	private String password;
 
-	@OneToMany(cascade = ALL, mappedBy = "user")
+	@OneToMany(cascade = ALL, mappedBy = "userId")
 	private List<UserEmail> emails;
 
-	@OneToMany(cascade = ALL, mappedBy = "user")
+	@OneToMany(cascade = ALL, mappedBy = "userId")
 	private List<UserPhone> phones;
 
 	@Column(nullable = false)
 	@CreationTimestamp
-	private LocalDateTime createdAt;
+	private Timestamp createdAt;
 
 	@Column(nullable = false)
 	@UpdateTimestamp
-	private LocalDateTime updatedAt;
+	private Timestamp updatedAt;
 
 	// Domain
 	// Behavior
 	private static final HashingStrategy strategy = HashingStrategy.load();
-	private transient UserService userService;
 
-	public void changePassword(String newPassword) {
-		assert StringUtils.isBlank(newPassword) : "Password is required.";
-		this.password = hashPassword(newPassword);
-		userService.save(this);
+	/**
+	 * Ex: 10092982873747
+	 */
+	public static String generateID() {
+		return (Instant.now().toEpochMilli() - EPOCH) +
+			String.valueOf((long) ((Math.random() * (RAND - RAND_E)) + RAND_E));
 	}
 
-	public Future<User> signin() {
-		return userService.signin(this);
+	public void changePassword(String newPwd) {
+		this.setPassword(newPwd);
+		// TODO: create event change password
 	}
 
-	public Future<User> signup() {
-		this.password = hashPassword(this.password);
-
-		return Future.future(handle -> {
-			userService.signup(this);
-			handle.complete(this);
-		});
-	}
-
-	public Future<User> logout() {
-		return null;
-	}
-
-	public String hashPassword(String password) {
+	public static String hashPassword(String pwd) {
 		return strategy.hash(
 			"pbkdf2",
 			null,
 			VertxContextPRNG.current().nextString(32),
-			password
+			pwd
 		);
 	}
 
-	public boolean verifyPassword(String passwordNeedVerify) {
-		return strategy.verify(this.password, passwordNeedVerify);
+	public boolean verifyPassword(String pwdNeedVerify) {
+		return strategy.verify(this.password, pwdNeedVerify);
 	}
 }

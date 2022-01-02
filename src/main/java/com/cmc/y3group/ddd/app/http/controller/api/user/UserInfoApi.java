@@ -9,7 +9,7 @@ import io.vertx.ext.web.RoutingContext;
 import org.springframework.stereotype.Component;
 
 import static com.cmc.y3group.ddd.config.constants.AuthConstant.ID;
-import static com.cmc.y3group.ddd.config.constants.AuthConstant.USERNAME;
+import static com.cmc.y3group.ddd.config.constants.AuthConstant.NAME;
 
 @Component
 public class UserInfoApi extends Controller {
@@ -25,17 +25,17 @@ public class UserInfoApi extends Controller {
 	}
 
 	@Override
-	public void handle(RoutingContext event) {
-		JsonObject jsonObject = event.user().principal();
-		UserResponse userResponse = new UserResponse();
-		userResponse.setId(jsonObject.getLong(ID));
-		userResponse.setUsername(jsonObject.getString(USERNAME));
+	public void handle(RoutingContext evt) {
+		JsonObject jsonObj = evt.user().principal();
+		UserResponse userRes = new UserResponse();
+		userRes.setUserId(jsonObj.getString(ID));
+		userRes.setName(jsonObj.getString(NAME));
 
 		Response res = new Response();
 		res.setMessage("successfully.");
 		res.setCode(Response.CODE.OK);
 		res.setStatus(Response.STATUS.SUCCESS);
-		res.setData(userResponse);
-		event.json(res);
+		res.setData(userRes);
+		evt.json(res);
 	}
 }

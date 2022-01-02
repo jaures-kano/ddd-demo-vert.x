@@ -18,7 +18,6 @@ public class GenericCodec<T> implements MessageCodec<T, T> {
 		this.cls = cls;
 	}
 
-
 	/** {@inheritDoc} */
 	@Override
 	public void encodeToWire(Buffer buf, T s) {

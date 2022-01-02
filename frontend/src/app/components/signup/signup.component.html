@@ -1,0 +1,91 @@
+<div class="container mt-5 max-width-500">
+	<h3 class="text-center">
+		Sign Up
+	</h3>
+	<div class="form-signup shadow rounded bg-white">
+		<form [formGroup]="form" (ngSubmit)="onSubmit()">
+			<div class="mb-4">
+				<label for="name" class="form-label">Fullname</label>
+				<input formControlName="name" name="name" type="text" class="form-control" id="name"
+					   [class.is-invalid]="!form.pristine && form.get('name')?.invalid"
+					   placeholder="Enter fullname."
+					   aria-describedby="nameHelp">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('name')?.hasError('required') ? 'required' :
+					 (form.get('name')?.hasError('minlength') ? 'minlength' : 'default')
+				">
+					<span *ngSwitchCase="'required'">Fullname is required.</span>
+					<span *ngSwitchCase="'minlength'">Fullname is too short.</span>
+				</div>
+			</div>
+			<div class="mb-4">
+				<label for="email" class="form-label">Email</label>
+				<input formControlName="email" name="email" type="email" class="form-control" id="email"
+					   [class.is-invalid]="!form.pristine && form.get('email')?.invalid"
+					   placeholder="Enter your email."
+					   aria-describedby="emailHelp">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('email')?.hasError('required') ? 'required' :
+					 (form.get('email')?.hasError('minlength') ? 'minlength' : 'default')
+				">
+					<span *ngSwitchCase="'required'">Email is required.</span>
+					<span *ngSwitchCase="'minlength'">Email is too short.</span>
+				</div>
+			</div>
+			<div class="mb-4">
+				<label for="phone" class="form-label">Phone</label>
+				<input formControlName="phone" name="phone" type="text" class="form-control" id="phone"
+					   [class.is-invalid]="!form.pristine && form.get('phone')?.invalid"
+					   placeholder="Enter your phone."
+					   aria-describedby="phoneHelp">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('phone')?.hasError('required') ? 'required' :
+					 (form.get('phone')?.hasError('minlength') ? 'minlength' : 'default')
+				">
+					<span *ngSwitchCase="'required'">Phone is required.</span>
+					<span *ngSwitchCase="'minlength'">Phone is too short.</span>
+				</div>
+			</div>
+			<div class="mb-4">
+				<label for="password" class="form-label">Password</label>
+				<input formControlName="password" name="password" type="password" class="form-control" id="password"
+					   [class.is-invalid]="!form.pristine && form.get('password')?.invalid"
+					   placeholder="Enter your password.">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('password')?.hasError('required') ? 'required' :
+					 (form.get('password')?.hasError('minlength') ? 'minlength' : 'default')
+				">
+					<span *ngSwitchCase="'required'">Password is required.</span>
+					<span *ngSwitchCase="'minlength'">Password is too short.</span>
+				</div>
+			</div>
+
+			<div class="mb-4">
+				<label for="confirmPassword" class="form-label">Confirm password</label>
+				<input formControlName="confirmPassword" name="confirmPassword" type="password" class="form-control" id="confirmPassword"
+					   [class.is-invalid]="!form.pristine && form.get('confirmPassword')?.invalid"
+					   placeholder="Confirm password.">
+				<div class="invalid-feedback"
+					 [ngSwitch]="
+					 form.get('confirmPassword')?.hasError('password_not_match') ? 'password_not_match' :
+					 (form.get('confirmPassword')?.hasError('required') ? 'required' :
+					 (form.get('confirmPassword')?.hasError('minlength') ? 'minlength' : 'default'))
+				">
+					<span *ngSwitchCase="'required'">Confirm password is required.</span>
+					<span *ngSwitchCase="'minlength'">Password is too short.</span>
+					<span *ngSwitchCase="'password_not_match'">Password and confirm password does not match.</span>
+				</div>
+			</div>
+			<div class="text-center">
+				<button type="submit" class="btn btn-primary">Sign Up</button>
+			</div>
+			<div class="text-end">
+				<a [routerLink]="'/' + pageSignIn" class="btn-signup">Login</a>
+			</div>
+		</form>
+	</div>
+</div>

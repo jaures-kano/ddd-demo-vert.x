@@ -20,11 +20,11 @@ public class ProductApi extends Controller {
 	 */
 	public static String PATH = "/product";
 
-//	public ProductApi() {
-//		middlewares = new Class[]{
-//			Authenticate.class
-//		};
-//	}
+	public ProductApi() {
+		middlewares = new Class[]{
+			Authenticate.class
+		};
+	}
 
 	@Override
 	public void handle(RoutingContext evt) {

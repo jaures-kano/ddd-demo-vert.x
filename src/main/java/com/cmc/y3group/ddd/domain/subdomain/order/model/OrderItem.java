@@ -8,17 +8,25 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table
+@Table(name = "order_items", indexes = {@Index(name = "product_id", columnList = "productId")})
 public class OrderItem {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 
-	private String name;
+	private String productId;
+
+	private String title;
+
+	private Integer quantity;
+
+	private Double price;
+
+	private String image;
+
+	private String voucher;
 
 	@Lob
 	private String discription;
-	private Double price;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)

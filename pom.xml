@@ -15,18 +15,13 @@
 	<description>Demo DDD by Toan Nguyen.</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
-
-
-
+		<java.version>11</java.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
 		<micrometer.version>1.8.1</micrometer.version>
-
 		<vertx.version>4.2.2</vertx.version>
-
 	</properties>
 
 	<dependencyManagement>
@@ -95,6 +90,13 @@
 			<version>2.11.4</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.11.4</version>
+		</dependency>
+
+
 
 		<!--		Vert.x-->
 		<dependency>
@@ -116,6 +118,12 @@
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-auth-jwt</artifactId>
 			<version>4.2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-rx-java3</artifactId>
+			<version>4.2.3</version>
 		</dependency>
 
 <!--		<dependency>-->
@@ -162,7 +170,16 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>31.0.1-jre</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
